@@ -18,7 +18,23 @@ jobs:
         run: |
           unzip -q OmegaPoolAssistant-v0.2-GitHub-Actions.zip -d extracted
           cp -R extracted/OmegaPoolAssistant-v0.2/. .
-
+      - name: Align Java and Kotlin compile targets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("app/build.gradle.kts")
+          content = path.read_text()
+          content = content.replace(
+              "android {",
+              """android {
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }""",
+              1
+          )
+          path.write_text(content)
+          PY
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
